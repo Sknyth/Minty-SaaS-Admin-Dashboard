@@ -13,15 +13,15 @@ export const useStatStore = defineStore('stats', {
   actions: {
     async fetchEarnings() {
       this.loading = true
-      
+
       const { data, error } = await supabase
         .from('orders')
         .select('total_price')
-        
+
       if (error) throw error
-			
+
       this.totalEarnings = data.reduce((acc, order) => acc + order.total_price, 0)
-      
+
       this.loading = false
     },
     getStartOfMonth() {
@@ -38,7 +38,7 @@ export const useStatStore = defineStore('stats', {
         .from('orders')
         .select('*', { count: 'exact', head: true })
         .gte('created_at', firstDay)
-      
+
       this.totalOrders = count || 0
 
       const { data, error } = await supabase
@@ -64,7 +64,7 @@ export const useStatStore = defineStore('stats', {
       this.loading = false
     },
 
-    async fetchOrders(){
+    async fetchOrders() {
       this.loading = true
       const { data, error } = await supabase
         .from('orders')
@@ -74,6 +74,19 @@ export const useStatStore = defineStore('stats', {
       this.orders = data
       this.loading = false
       return data
+    },
+
+    async updateOrderStatus(orderId, newStatus) {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: newStatus })
+        .eq('id', orderId)
+
+      if (error) throw error
+
+      const order = this.orders.find(o => o.id === orderId)
+      if (order) order.status = newStatus
+
     }
   }
 })

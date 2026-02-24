@@ -1,14 +1,31 @@
 <script>
+import { useToast } from "vue-toastification"
 import NavBar from '../components/NavBar.vue'
 import { useStatStore } from '../stores/statStore'
 
 export default {
   components: { NavBar },
+  
   setup() {
     const statStore = useStatStore()
+    const toast = useToast()
+
     statStore.fetchOrders()
-    return { statStore }
+
+    return { statStore, toast }
   },
+
+  methods: {
+    async handleStatusChange(orderId, newStatus) {
+      try {
+        await this.statStore.updateOrderStatus(orderId, newStatus)
+        this.toast.success(`Order updated to ${newStatus}`)
+      } catch (error) {
+        this.toast.error('Failed to update: ' + error.message)
+        this.statStore.fetchOrders()
+      }
+    }
+  }
 }
 </script>
 
@@ -46,10 +63,19 @@ export default {
               <td class="px-4 py-3 text-center fw-bold color1">
                 ${{ order.total_price }}
               </td>
-              <td class="px-4 py-3 text-center">
-                <span :class="['status-badge', order.status.toLowerCase()]">
-                  {{ order.status }}
-                </span>
+              <td class="px-3 py-2 text-center">
+                <div class="status-select-container">
+                  <select 
+                    :value="order.status" 
+                    @change="handleStatusChange(order.id, $event.target.value)"
+                    :class="['status-select-custom', order.status.toLowerCase()]"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                  <i class="bi bi-chevron-down select-icon"></i>
+                </div>
               </td>
               <td class="px-4 py-3 text-end text-muted small">
                 {{ order.created_at ? new Date(order.created_at).toLocaleDateString() : '—' }}
@@ -108,30 +134,55 @@ export default {
   border-bottom: none;
 }
 
-.status-badge {
-  padding: 5px 12px;
-  border-radius: 8px;
-  font-weight: 700;
+.status-select-container {
+  position: relative;
   display: inline-block;
+  width: 130px;
+}
+
+.status-select-custom {
+  appearance: none;
+  width: 100%;
+  padding: 4px 25px 4px 12px;
+  font-weight: 700;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
   text-transform: capitalize;
+  transition: all 0.2s ease;
 }
 
-.status-badge.paid, .status-badge.completed {
-  background: rgba(45, 138, 114, 0.12);
-  color: var(--color1);
+.select-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
-.status-badge.pending {
-  background: rgba(255, 228, 181, 0.3);
-  color: #d97706;
+.status-select-custom.delivered {
+  background-color: #D4EDDA;
+  color: #155724;
 }
 
-.status-badge.cancelled {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+.status-select-custom.pending {
+  background-color: #FFF3CD;
+  color: #856404;
 }
 
-.color1 {
-  color: var(--color1);
+.status-select-custom.cancelled {
+  background-color: #F8D7DA;
+  color: #721C24;
+}
+.status-select-custom.delivered:hover, .status-select-custom.delivered:focus {
+  box-shadow: 0 0 0 2px var(--color1);
+}
+.status-select-custom.pending:hover, .status-select-custom.pending:focus {
+  box-shadow: 0 0 0 2px var(--color2);
+}
+.status-select-custom.cancelled:hover, .status-select-custom.cancelled:focus {
+  box-shadow: 0 0 0 2px #dc3545;
 }
 </style>
