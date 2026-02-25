@@ -56,15 +56,14 @@ select {
 input:hover,
 textarea:hover,
 select:hover {
-	border-color: var(--color1);
-	box-shadow: 0 0 0 3px rgba(45, 138, 114, 0.12);
+	border-color: var(--color1) !important;
 }
 input:focus,
 textarea:focus,
 select:focus {
-	outline: none;
-	border-color: var(--color1);
-	box-shadow: 0 0 0 3px rgba(45, 138, 114, 0.15);
+	outline: none !important;
+	border-color: var(--color1) !important;
+	box-shadow: none !important;
 }
 
 /* CSS Variables */

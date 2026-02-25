@@ -8,7 +8,7 @@ export const useStatStore = defineStore('stats', {
     chartLabels: [],
     chartData: [],
     orders: [],
-    loading: false
+    loading: false,
   }),
   actions: {
     async fetchEarnings() {
@@ -76,6 +76,25 @@ export const useStatStore = defineStore('stats', {
       return data
     },
 
+    async searchOrders(query) {
+      this.loading = true
+
+      if (!query) {
+        return await this.fetchOrders()
+      }
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .textSearch('id_text_search', query, {
+          config: 'simple',
+          type: 'phrase'
+        })
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      this.orders = data
+      this.loading = false
+    },
+
     async updateOrderStatus(orderId, newStatus) {
       const { error } = await supabase
         .from('orders')
@@ -87,6 +106,6 @@ export const useStatStore = defineStore('stats', {
       const order = this.orders.find(o => o.id === orderId)
       if (order) order.status = newStatus
 
-    }
+    },
   }
 })

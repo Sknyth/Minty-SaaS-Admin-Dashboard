@@ -5,7 +5,6 @@ import { useStatStore } from '../stores/statStore'
 
 export default {
   components: { NavBar },
-  
   setup() {
     const statStore = useStatStore()
     const toast = useToast()
@@ -13,6 +12,11 @@ export default {
     statStore.fetchOrders()
 
     return { statStore, toast }
+  },
+  data() {
+    return {
+      orderSearchQuery: ''
+    }
   },
 
   methods: {
@@ -32,13 +36,20 @@ export default {
 <template>
   <NavBar>
     <div class="header-section d-flex justify-content-between align-items-center mb-4">
-      <h1 class="page-title">Orders Management</h1>
-      <div class="stats-mini">
+      <h1 class="fw-bold">Orders Management</h1>
+
+      <div class="search-container w-100">
+        <input type="text" placeholder="Search id order" class="form-control custom-input mb-3" v-model="orderSearchQuery" @keyup="statStore.searchOrders(orderSearchQuery)" />
+      </div>
+
+      <div class="stats-mini d-flex justify-content-end">
         <span class="text-muted">Total records:</span> 
         <span class="fw-bold color1 ms-1">{{ statStore.orders.length }}</span>
       </div>
     </div>
 
+    
+    
     <div class="panel shadow-sm p-0 overflow-hidden">
       <div class="table-responsive">
         <table class="custom-table w-full">
@@ -53,7 +64,7 @@ export default {
           </thead>
           <tbody>
             <tr v-for="order in statStore.orders" :key="order.id" class="table-row">
-              <td class="px-4 py-3 fw-bold">#{{ order.id.toString().slice(-6) }}</td>
+              <td class="px-4 py-3 fw-bold">#{{ order.id.slice(0, 8) }}</td>
               <td class="px-4 py-3">
                 <div class="d-flex flex-column">
                   <span class="fw-bold">{{ order.customer_name }} {{ order.customer_surname }}</span>
@@ -94,9 +105,11 @@ export default {
 </template>
 
 <style scoped>
-.page-title {
-  font-weight: 700;
-  color: #2c2c2c;
+h1, .stats-mini {
+  width: 400px;
+}
+.search-container{
+  max-width: 400px;
 }
 
 .panel {
