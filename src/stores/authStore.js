@@ -5,6 +5,7 @@ import router from '../router'
 export const useAuthStore = defineStore('auth', {
 	state: () => ({
 		user: null,
+		users: [],
 		profile: null,
 		isAuth: false,
 	}),
@@ -58,6 +59,16 @@ export const useAuthStore = defineStore('auth', {
 			if (profile) {
 				this.profile = profile
 			}
+		},
+
+		async fetchUsers() {
+			this.loading = true
+			const { data, error } = await supabase
+				.from('profiles')
+				.select('*')
+			if (error) throw error
+			this.users = data
+			this.loading = false
 		},
 	}
 })

@@ -89,7 +89,6 @@ export const useStatStore = defineStore('stats', {
           config: 'simple',
           type: 'phrase'
         })
-        .order('created_at', { ascending: false })
       if (error) throw error
       this.orders = data
       this.loading = false

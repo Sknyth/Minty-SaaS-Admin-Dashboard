@@ -1,10 +1,208 @@
-<script setup>
+<script>
+import { useToast } from "vue-toastification"
 import NavBar from '../components/NavBar.vue'
+import { useProfileStore } from '../stores/profileStore'
+
+export default {
+  components: { NavBar },
+  setup() {
+    const toast = useToast()
+		const profileStore = useProfileStore()
+
+
+		profileStore.fetchProfiles()
+
+
+    return { toast, profileStore }
+  },
+  data() {
+    return {
+      userSearchQuery: ''
+    }
+  },
+
+  methods: {
+    async handleRoleChange(profileId, newRole) {
+      try {
+        await this.profileStore.updateUserRole(profileId, newRole)
+        this.toast.success(`User role updated to ${newRole}`)
+      } catch (error) {
+        this.toast.error('Failed to update: ' + error.message)
+        this.statStore.fetchOrders()
+      }
+    },
+    async handleDeleteUser(profileId) {
+      try {
+        await this.profileStore.deleteUser(profileId)
+        this.toast.success('User deleted successfully')
+      } catch (error) {
+        this.toast.error('Error: ' + error.message)
+      }
+    }
+  }
+}
 </script>
 
 <template>
-	<NavBar>
-		<h1>Users</h1>
-	</NavBar>
+  <NavBar>
+    <div class="header-section d-flex justify-content-between align-items-center mb-4">
+      <h1 class="fw-bold">Users Management</h1>
+
+      <div class="search-container w-100">
+        <input type="text" placeholder="Search..." class="form-control custom-input mb-3" v-model="userSearchQuery" />
+      </div>
+
+      <div class="stats-mini d-flex justify-content-end">
+        <span class="text-muted">Total records:</span> 
+        <span class="fw-bold color1 ms-1">{{ profileStore.profiles.length }}</span>
+      </div>
+    </div>
+    
+    <div class="panel shadow-sm p-0 overflow-hidden">
+      <div class="table-responsive">
+        <table class="custom-table w-full">
+          <thead>
+            <tr>
+              <th class="px-4 py-3">User id</th>
+              <th class="px-4 py-3">User</th>
+              <th class="px-4 py-3 text-center">Created at</th>
+              <th class="px-4 py-3 text-center">Last login</th>
+              <th class="px-4 py-3 text-center">Role</th>
+              <th class="px-4 py-3 text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="profile in profileStore.profiles" :key="profile.id" class="table-row">
+							<td class="px-4 py-3 fw-bold">#{{ profile.id.slice(0, 8) }}</td>
+
+							<td class="px-4 py-3">
+                <div class="d-flex flex-column">
+                  <span class="fw-bold">{{ profile.name }} {{ profile.surname }}</span>
+                  <span class="text-muted small"> {{ profile.email }} </span>
+                </div>
+              </td>
+              <td class="px-4 py-3 fw-bold text-center">
+                {{ profile.created_at ? new Date(profile.created_at).toLocaleDateString() : '—' }}
+              </td>
+              <td class="px-4 py-3 text-center fw-bold">
+                {{ profile.last_sign_in_at ? new Date(profile.last_sign_in_at).toLocaleDateString() : '—' }}
+              </td>
+              <td class="px-3 py-2 text-center">
+                <div class="role-select-container">
+                  <select 
+                    :value="profile.role" 
+                    @change="handleRoleChange(profile.id, $event.target.value)"
+                    :class="['role-select-custom', profile.role.toLowerCase()]"
+                    class="text-center"
+                  >
+                    <option class="text-center" value="admin">Admin</option>
+                    <option class="text-center" value="user">User</option>
+                  </select>
+                  <i class="bi bi-chevron-down select-icon"></i>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-end text-muted small">
+                <button class="btn btn-sm btn-outline-danger" 
+                @click="handleDeleteUser(profile.id)"
+                :disabled="profileStore.loading"
+                >Delete</button>
+              </td>
+            </tr>
+            <tr v-if="profileStore.profiles.length === 0">
+              <td colspan="5" class="text-center py-5 text-muted">
+                No users found.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </NavBar>
 </template>
 
+<style scoped>
+h1, .stats-mini {
+  width: 400px;
+}
+.search-container{
+  max-width: 400px;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid rgba(134, 134, 149, 0.15);
+  border-radius: 18px;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table thead {
+  background: #f8fafb;
+  border-bottom: 1px solid rgba(134, 134, 149, 0.1);
+}
+
+.custom-table th {
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--color3);
+}
+
+.table-row {
+  transition: background 0.2s ease;
+  border-bottom: 1px solid rgba(134, 134, 149, 0.05);
+}
+
+.table-row:hover {
+  background: rgba(45, 138, 114, 0.03);
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.status-select-container {
+  position: relative;
+  display: inline-block;
+  width: 130px;
+}
+
+.role-select-custom {
+  appearance: none;
+  width: 100%;
+  padding: 4px 25px 4px 12px;
+  font-weight: 700;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: all 0.2s ease;
+}
+
+.select-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.role-select-custom.admin {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+.role-select-custom.user {
+  background-color: #cfe2ff;
+  color: #084298;
+}
+.role-select-custom.user:hover, .role-select-custom.user:focus {
+  box-shadow: 0 0 0 2px #084298;
+}
+.role-select-custom.admin:hover, .role-select-custom.admin:focus {
+  box-shadow: 0 0 0 2px #721c24;
+}
+</style>

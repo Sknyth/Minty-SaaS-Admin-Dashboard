@@ -80,10 +80,11 @@ export default {
                     :value="order.status" 
                     @change="handleStatusChange(order.id, $event.target.value)"
                     :class="['status-select-custom', order.status.toLowerCase()]"
+                    class="text-center"
                   >
-                    <option value="pending">Pending</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option class="text-center" value="pending">Pending</option>
+                    <option class="text-center" value="delivered">Delivered</option>
+                    <option class="text-center" value="cancelled">Cancelled</option>
                   </select>
                   <i class="bi bi-chevron-down select-icon"></i>
                 </div>
@@ -196,6 +197,6 @@ h1, .stats-mini {
   box-shadow: 0 0 0 2px var(--color2);
 }
 .status-select-custom.cancelled:hover, .status-select-custom.cancelled:focus {
-  box-shadow: 0 0 0 2px #dc3545;
+  box-shadow: 0 0 0 2px #721C24;
 }
 </style>
