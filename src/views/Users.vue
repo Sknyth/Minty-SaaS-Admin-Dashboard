@@ -49,7 +49,7 @@ export default {
       <h1 class="fw-bold">Users Management</h1>
 
       <div class="search-container w-100">
-        <input type="text" placeholder="Search..." class="form-control custom-input mb-3" v-model="userSearchQuery" />
+        <input type="text" placeholder="Search..." class="form-control custom-input mb-3" v-model="userSearchQuery" @keyup="profileStore.searchProfiles(userSearchQuery)" />
       </div>
 
       <div class="stats-mini d-flex justify-content-end">

@@ -44,6 +44,21 @@ export const useProfileStore = defineStore('profile', {
 
       this.profiles = this.profiles.filter(p => p.id !== profileId)
       this.loading = false
-    }
-	},
+    },
+    async searchProfiles(query) {
+      this.loading = true
+      if (!query) return await this.fetchProfiles()
+  
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .textSearch('fts', query, {
+          config: 'english',
+          type: 'websearch'
+        })
+      if (error) throw error
+      this.profiles = data
+      this.loading = false
+	  },
+  },
 })
