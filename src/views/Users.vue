@@ -9,9 +9,7 @@ export default {
     const toast = useToast()
 		const profileStore = useProfileStore()
 
-
 		profileStore.fetchProfiles()
-
 
     return { toast, profileStore }
   },
