@@ -32,5 +32,26 @@ export const useProductsStore = defineStore('products', {
       this.products = data
       this.loading = false
 	  },
+		async deleteProduct(productId) {
+			this.loading = true
+			const { error } = await supabase
+			.from('products')
+			.delete()
+			.eq('id', productId)
+			if (error) throw error
+			this.products = this.products.filter(p => p.id !== productId)
+			this.loading = false
+		},
+		async updateProduct(productId, updatedData) {
+			this.loading = true
+			const { error } = await supabase
+			.from('products')
+			.update(updatedData)
+			.eq('id', productId)
+			if (error) throw error
+			const index = this.products.findIndex(p => p.id === productId)
+			if (index !== -1) this.products[index] = { ...this.products[index], ...updatedData }
+			this.loading = false
+		},
 	},
 })

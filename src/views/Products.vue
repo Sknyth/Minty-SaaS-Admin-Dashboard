@@ -2,9 +2,10 @@
 import { useToast } from "vue-toastification"
 import NavBar from '../components/NavBar.vue'
 import { useProductsStore } from '../stores/productStore'
+import ModalEditProduct from '../components/ModalEditProduct.vue'
 
 export default {
-  components: { NavBar },
+  components: { NavBar, ModalEditProduct },
   setup() {
     const toast = useToast()
     const productsStore = useProductsStore()
@@ -15,7 +16,17 @@ export default {
   },
   data() {
     return {
-      productSearchQuery: ''
+      productSearchQuery: '',
+    }
+  },
+  methods: {
+    async handleDeleteProduct(productId) {
+      try {
+        await this.productsStore.deleteProduct(productId)
+        this.toast.success('Product deleted successfully')
+      } catch (error) {
+        this.toast.error('Error: ' + error.message)
+      }
     }
   }
 }
@@ -81,8 +92,8 @@ export default {
                 </span>
               </td>
               <td class="px-4 py-3 text-end text-muted small">
-                <button class="btn btn-sm btn-outline-primary me-2">Edit</button>
-                <button class="btn btn-sm btn-outline-danger">Delete</button>
+                <ModalProduct :product="product" />
+                <button class="btn btn-sm btn-outline-danger" @click="handleDeleteProduct(product.id)">Delete</button>
               </td>
             </tr>
             <tr v-if="0">
