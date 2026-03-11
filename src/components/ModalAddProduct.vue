@@ -2,43 +2,36 @@
 import { useToast } from "vue-toastification"
 import { useProductsStore } from '../stores/productStore'
 export default {
-	props: {
-		product: {
-			type: Object,
-			required: true
-		},
-	},
 	setup() {
 		const toast = useToast()
 		const productsStore = useProductsStore()
 		return { toast, productsStore }
-
 	},
 	data() {
 		return {
-			editingProduct: {
-				id: this.product.id || '',
-				name: this.product.name || '',
-				price: this.product.price || '',
-				description: this.product.description || '',
-				image_url: this.product.image_url || '',
-				sizes: this.product.sizes || []
+			newProduct: {
+				id: '',
+				name: '',
+				price: '',
+				description: '',
+				image_url: '',
+				sizes: []
 			},
-			sizesInput: (this.product.sizes && Array.isArray(this.product.sizes)) ? this.product.sizes.join(', ') : ''
+			sizesInput: ''
 		}
 	},
 	methods: {
 		async handleSaveProduct() {
 			try {
 				const updatedData = {
-					name: this.editingProduct.name,
-					price: this.editingProduct.price,
-					description: this.editingProduct.description,
-					image_url: this.editingProduct.image_url,
+					name: this.newProduct.name,
+					price: this.newProduct.price,
+					description: this.newProduct.description,
+					image_url: this.newProduct.image_url,
 					sizes: this.sizesInput.split(',').map(s => s.trim()).filter(s => s)
 				}
-				await this.productsStore.updateProduct(this.editingProduct.id, updatedData)
-				this.toast.success('Product updated successfully')
+				await this.productsStore.addProduct(updatedData)
+				this.toast.success('Product added successfully')
 			} catch (error) {
 				this.toast.error('Error: ' + error.message)
 			}
@@ -48,36 +41,36 @@ export default {
 </script>
 
 <template>
-	<button type="button" class="btn btn-sm btn-outline-primary me-2 btn-open" data-bs-toggle="modal" :data-bs-target="`#editModal-${product.id}`">
-		Edit
+	<button type="button" class="button-color3 btn-open" data-bs-toggle="modal" data-bs-target="#addModal">
+		Add Product
 	</button>
 
-	<div class="modal fade" :id="`editModal-${product.id}`" tabindex="-1" :aria-labelledby="`editModalLabel-${product.id}`" aria-hidden="true">
+	<div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-			<div class="modal-content">	
+			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title fw-bold" id="editModalLabel">Edit Product</h5>
+					<h5 class="modal-title fw-bold" id="addModalLabel">Add Product</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
           <div class="mb-3">
             <label class="form-label fw-bold text-start d-block">Product Name</label>
-            <input type="text" class="form-control" v-model="editingProduct.name" />
+            <input type="text" class="form-control" v-model="newProduct.name" />
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-bold text-start d-block">Price</label>
-            <input type="number" class="form-control" v-model="editingProduct.price" step="0.01" />
+            <input type="number" class="form-control" v-model="newProduct.price" step="0.01" />
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-bold text-start d-block">Image URL</label>
-            <input type="text" class="form-control" v-model="editingProduct.image_url" />
+            <input type="text" class="form-control" v-model="newProduct.image_url" />
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-bold text-start d-block">Description</label>
-            <textarea class="form-control" v-model="editingProduct.description" rows="3"></textarea>
+            <textarea class="form-control" v-model="newProduct.description" rows="3"></textarea>
           </div>
 
           <div class="mb-3">
@@ -87,7 +80,7 @@ export default {
         </div>
 				<div class="modal-footer">
 					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-					<button type="button" class="button-color3" data-bs-dismiss="modal" @click="handleSaveProduct">Save changes</button>
+					<button type="button" class="button-color3" data-bs-dismiss="modal" @click="handleSaveProduct">Add Product</button>
 				</div>
 			</div>
 		</div>

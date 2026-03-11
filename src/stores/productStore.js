@@ -53,5 +53,15 @@ export const useProductsStore = defineStore('products', {
 			if (index !== -1) this.products[index] = { ...this.products[index], ...updatedData }
 			this.loading = false
 		},
+		async addProduct(newProduct) {
+			this.loading = true
+			const { data, error } = await supabase
+			.from('products')
+			.insert(newProduct)
+			.select()
+			if (error) throw error
+			this.products = data
+			this.loading = false
+		},
 	},
 })

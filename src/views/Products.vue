@@ -1,11 +1,12 @@
 <script>
 import { useToast } from "vue-toastification"
+import ModalAddProduct from '../components/ModalAddProduct.vue'
+import ModalEditProduct from '../components/ModalEditProduct.vue'
 import NavBar from '../components/NavBar.vue'
 import { useProductsStore } from '../stores/productStore'
-import ModalEditProduct from '../components/ModalEditProduct.vue'
 
 export default {
-  components: { NavBar, ModalEditProduct },
+  components: { NavBar, ModalEditProduct, ModalAddProduct },
   setup() {
     const toast = useToast()
     const productsStore = useProductsStore()
@@ -38,9 +39,13 @@ export default {
       <h1 class="fw-bold">Products Management</h1>
 
       <div class="search-container w-100">
-        <input type="text" placeholder="Search..." class="form-control custom-input mb-3" 
+        <input type="text" placeholder="Search..." class=" custom-input mb-3 w-100" 
 				v-model="productSearchQuery" @keyup="productsStore.searchProducts(productSearchQuery)"
 				/>
+      </div>
+
+      <div>
+        <ModalAddProduct />
       </div>
 
       <div class="stats-mini d-flex justify-content-end">
@@ -92,7 +97,7 @@ export default {
                 </span>
               </td>
               <td class="px-4 py-3 text-end text-muted small">
-                <ModalProduct :product="product" />
+                <ModalEditProduct :product="product" />
                 <button class="btn btn-sm btn-outline-danger" @click="handleDeleteProduct(product.id)">Delete</button>
               </td>
             </tr>
@@ -109,7 +114,7 @@ export default {
 </template>
 
 <style scoped>
-h1, .stats-mini {
+h1 {
   width: 415px;
 }
 .search-container{

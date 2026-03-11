@@ -39,7 +39,7 @@ export default {
       <h1 class="fw-bold">Orders Management</h1>
 
       <div class="search-container w-100">
-        <input type="text" placeholder="Search id order" class="form-control custom-input mb-3" v-model="orderSearchQuery" @keyup="statStore.searchOrders(orderSearchQuery)" />
+        <input type="text" placeholder="Search id order" class="w-100 custom-input mb-3" v-model="orderSearchQuery" @keyup="statStore.searchOrders(orderSearchQuery)" />
       </div>
 
       <div class="stats-mini d-flex justify-content-end">
