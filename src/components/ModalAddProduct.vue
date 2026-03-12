@@ -1,6 +1,7 @@
 <script>
 import { useToast } from "vue-toastification"
 import { useProductsStore } from '../stores/productStore'
+import { onMounted } from 'vue'
 export default {
 	setup() {
 		const toast = useToast()
@@ -17,7 +18,9 @@ export default {
 				image_url: '',
 				sizes: []
 			},
-			sizesInput: ''
+			sizesInput: '',
+			file: null,
+			disabledInput: true
 		}
 	},
 	methods: {
@@ -30,12 +33,19 @@ export default {
 					image_url: this.newProduct.image_url,
 					sizes: this.sizesInput.split(',').map(s => s.trim()).filter(s => s)
 				}
-				await this.productsStore.addProduct(updatedData)
+				await this.productsStore.addProduct(updatedData, this.file)
+				this.resetForm()
 				this.toast.success('Product added successfully')
 			} catch (error) {
 				this.toast.error('Error: ' + error.message)
 			}
-		}
+		},
+		resetForm() {
+      this.newProduct = { name: '', price: '', description: '', image_url: '', sizes: [] }
+      this.sizesInput = ''
+			this.file = null
+    },
+		
 	}
 }
 </script>
@@ -60,12 +70,17 @@ export default {
 
           <div class="mb-3">
             <label class="form-label fw-bold text-start d-block">Price</label>
-            <input type="number" class="form-control" v-model="newProduct.price" step="0.01" />
+            <input type="number" class="form-control" v-model="newProduct.price" />
           </div>
 
           <div class="mb-3">
             <label class="form-label fw-bold text-start d-block">Image URL</label>
-            <input type="text" class="form-control" v-model="newProduct.image_url" />
+            <input type="text" :disabled="file != null" class="form-control" v-model="newProduct.image_url" />
+          </div>
+
+					<div class="mb-3">
+            <label class="form-label fw-bold text-start d-block">Image file</label>
+            <input type="file" :disabled="newProduct.image_url != ''" class="form-control" @change="e => file = e.target.files[0]" />
           </div>
 
           <div class="mb-3">
