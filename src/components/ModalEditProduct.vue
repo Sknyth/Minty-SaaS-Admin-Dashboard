@@ -24,7 +24,8 @@ export default {
 				image_url: this.product.image_url || '',
 				sizes: this.product.sizes || []
 			},
-			sizesInput: (this.product.sizes && Array.isArray(this.product.sizes)) ? this.product.sizes.join(', ') : ''
+			sizesInput: (this.product.sizes && Array.isArray(this.product.sizes)) ? this.product.sizes.join(', ') : '',
+			file: null
 		}
 	},
 	methods: {
@@ -37,7 +38,8 @@ export default {
 					image_url: this.editingProduct.image_url,
 					sizes: this.sizesInput.split(',').map(s => s.trim()).filter(s => s)
 				}
-				await this.productsStore.updateProduct(this.editingProduct.id, updatedData)
+				await this.productsStore.updateProduct(this.editingProduct.id, updatedData, this.file)
+				this.file = null
 				this.toast.success('Product updated successfully')
 			} catch (error) {
 				this.toast.error('Error: ' + error.message)
@@ -72,7 +74,12 @@ export default {
 
           <div class="mb-3">
             <label class="form-label fw-bold text-start d-block">Image URL</label>
-            <input type="text" class="form-control" v-model="editingProduct.image_url" />
+            <input type="text" :disabled="file != null" class="form-control" v-model="editingProduct.image_url" />
+          </div>
+
+					<div class="mb-3">
+            <label class="form-label fw-bold text-start d-block">Image file</label>
+            <input type="file" :disabled="editingProduct.image_url != ''" class="form-control" @change="e => file = e.target.files[0]" />
           </div>
 
           <div class="mb-3">

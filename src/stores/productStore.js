@@ -43,22 +43,46 @@ export const useProductsStore = defineStore('products', {
 			this.products = this.products.filter(p => p.id !== productId)
 			this.loading = false
 		},
-		async updateProduct(productId, updatedData) {
+		async updateProduct(productId, updatedData, file) {
 			this.loading = true
+
+			let finalImageUrl = updatedData.image_url
+
+    	if (file) {
+				const fileName = `${Date.now()}_${file.name}`
+				const { error: uploadError } = await supabase.storage
+					.from('products')
+					.upload(fileName, file)
+
+				if (uploadError) throw uploadError
+
+				const { data: urlData } = supabase.storage
+					.from('products')
+					.getPublicUrl(fileName)
+				
+				finalImageUrl = urlData.publicUrl
+			}
+
 			const { error } = await supabase
 				.from('products')
-				.update(updatedData)
+				.update({...updatedData, image_url: finalImageUrl})
 				.eq('id', productId)
 			if (error) throw error
 			const index = this.products.findIndex(p => p.id === productId)
-			if (index !== -1) this.products[index] = { ...this.products[index], ...updatedData }
+    	if (index !== -1) {
+				this.products[index] = { 
+					...this.products[index], 
+					...updatedData, 
+					image_url: finalImageUrl
+				}
+			}
 			this.loading = false
 		},
 		async addProduct(newProduct, file) {
 			this.loading = true
 			let finalImageUrl = newProduct.image_url
 
-    if (file) {
+    	if (file) {
 				const fileName = `${Date.now()}_${file.name}`
 				const { error: uploadError } = await supabase.storage
 					.from('products')
