@@ -35,28 +35,33 @@ export default {
 
 <template>
   <NavBar>
-    <div class="header-section d-flex justify-content-between align-items-center mb-4">
-      <h1 class="fw-bold">Products Management</h1>
+    <div class="header-section d-flex align-items-center mb-4 row gap-3">
+      <div class="header-start col-lg">
+        <h2 class="fw-bold">Products Management</h2>
+      </div>
 
-      <div class="search-container w-100">
-        <input type="text" placeholder="Search..." class=" custom-input mb-3 w-100" 
+
+      <div class="header-main col-lg">
+        <input type="text" placeholder="Search..." class="custom-input mb-3" 
 				v-model="productSearchQuery" @keyup="productsStore.searchProducts(productSearchQuery)"
 				/>
       </div>
 
-      <div>
-        <ModalAddProduct />
-      </div>
-
-      <div class="stats-mini d-flex justify-content-end">
-        <span class="text-muted">Total records:</span> 
-        <span class="fw-bold color1 ms-1">{{ productsStore.products.length }}</span>
+      <div class="header-end d-flex col-lg gap-3">
+        <div>
+          <ModalAddProduct />
+        </div>
+        
+        <div class="stats-mini d-flex">
+          <span class="text-muted">Total records:</span> 
+          <span class="fw-bold color1 ms-1">{{ productsStore.products.length }}</span>
+        </div>
       </div>
     </div>
     
     <div class="panel shadow-sm p-0 overflow-hidden">
-      <div class="table-responsive">
-        <table class="custom-table w-full">
+      <div class="table-responsive table-scroll">
+        <table class="custom-table">
           <thead>
             <tr>
               <th class="px-4 py-3">Image</th>
@@ -96,14 +101,16 @@ export default {
                   <a href="#" @click.prevent="product.showFull = false" class="small color1 fw-bold"> hide</a>
                 </span>
               </td>
-              <td class="px-4 py-3 text-end text-muted small">
-                <ModalEditProduct :product="product" />
+              <td class="px-4 py-3 small">
+                <div class="modalEditProduct">
+                  <ModalEditProduct :product="product" />
+                </div>
                 <button class="btn btn-sm btn-outline-danger" @click="handleDeleteProduct(product.id)">Delete</button>
               </td>
             </tr>
-            <tr v-if="0">
+            <tr v-if="productsStore.products.length === 0">
               <td colspan="5" class="text-center py-5 text-muted">
-                No users found.
+                No products found.
               </td>
             </tr>
           </tbody>
@@ -114,17 +121,28 @@ export default {
 </template>
 
 <style scoped>
-h1 {
-  width: 415px;
-}
-.search-container{
-  max-width: 400px;
-}
 
 .panel {
   background: #ffffff;
   border: 1px solid rgba(134, 134, 149, 0.15);
   border-radius: 18px;
+}
+.table-scroll {
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+}
+.header-section {
+  justify-content: space-between;
+}
+
+.header-end {
+  justify-content: end;
+  align-items: end;
+  flex-direction: column;
+}
+
+.custom-input {
+  width: 100%;
 }
 
 .custom-table {
@@ -184,6 +202,10 @@ h1 {
   opacity: 0.6;
 }
 
+.modalEditProduct {
+  margin: 0 1rem 1rem 0;
+}
+
 .role-select-custom.admin {
   background-color: #f8d7da;
   color: #721c24;
@@ -197,5 +219,20 @@ h1 {
 }
 .role-select-custom.admin:hover, .role-select-custom.admin:focus {
   box-shadow: 0 0 0 2px #721c24;
+}
+@media(max-width: 991px){
+  .header-start, .header-main {
+    text-align: center;
+  }
+  .custom-input {
+    width: 50%;
+  }
+  .header-section {
+    justify-content: center;
+  }
+  .header-end {
+    align-items: center;
+    justify-content: center;
+  }
 }
 </style>

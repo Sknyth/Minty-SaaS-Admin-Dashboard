@@ -26,7 +26,7 @@ export default {
         this.toast.success(`User role updated to ${newRole}`)
       } catch (error) {
         this.toast.error('Failed to update: ' + error.message)
-        this.statStore.fetchOrders()
+        this.profileStore.fetchProfiles()
       }
     },
     async handleDeleteUser(profileId) {
@@ -43,16 +43,20 @@ export default {
 
 <template>
   <NavBar>
-    <div class="header-section d-flex justify-content-between align-items-center mb-4">
-      <h1 class="fw-bold">Users Management</h1>
-
-      <div class="search-container w-100">
-        <input type="text" placeholder="Search..." class="w-100 custom-input mb-3" v-model="userSearchQuery" @keyup="profileStore.searchProfiles(userSearchQuery)" />
+    <div class="header-section d-flex align-items-center mb-4 row gap-3">
+      <div class="header-start col-lg">
+        <h2 class="fw-bold">Users Management</h2>
       </div>
 
-      <div class="stats-mini d-flex justify-content-end">
-        <span class="text-muted">Total records:</span> 
-        <span class="fw-bold color1 ms-1">{{ profileStore.profiles.length }}</span>
+      <div class="header-main col-lg">
+        <input type="text" placeholder="Search..." class="custom-input mb-3" v-model="userSearchQuery" @keyup="profileStore.searchProfiles(userSearchQuery)" />
+      </div>
+
+      <div class="header-end d-flex col-lg gap-3">
+        <div class="stats-mini d-flex">
+          <span class="text-muted">Total records:</span> 
+          <span class="fw-bold color1 ms-1">{{ profileStore.profiles.length }}</span>
+        </div>
       </div>
     </div>
     
@@ -107,7 +111,7 @@ export default {
               </td>
             </tr>
             <tr v-if="profileStore.profiles.length === 0">
-              <td colspan="5" class="text-center py-5 text-muted">
+              <td colspan="6" class="text-center py-5 text-muted">
                 No users found.
               </td>
             </tr>
@@ -119,11 +123,18 @@ export default {
 </template>
 
 <style scoped>
-h1, .stats-mini {
-  width: 400px;
+.header-section {
+  justify-content: space-between;
 }
-.search-container{
-  max-width: 400px;
+
+.header-end {
+  justify-content: end;
+  align-items: end;
+  flex-direction: column;
+}
+
+.custom-input {
+  width: 100%;
 }
 
 .panel {
@@ -202,5 +213,20 @@ h1, .stats-mini {
 }
 .role-select-custom.admin:hover, .role-select-custom.admin:focus {
   box-shadow: 0 0 0 2px #721c24;
+}
+@media(max-width: 991px){
+  .header-start, .header-main {
+    text-align: center;
+  }
+  .custom-input {
+    width: 50%;
+  }
+  .header-section {
+    justify-content: center;
+  }
+  .header-end {
+    align-items: center;
+    justify-content: center;
+  }
 }
 </style>

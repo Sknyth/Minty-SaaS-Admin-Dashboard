@@ -35,16 +35,20 @@ export default {
 
 <template>
   <NavBar>
-    <div class="header-section d-flex justify-content-between align-items-center mb-4">
-      <h1 class="fw-bold">Orders Management</h1>
-
-      <div class="search-container w-100">
-        <input type="text" placeholder="Search id order" class="w-100 custom-input mb-3" v-model="orderSearchQuery" @keyup="statStore.searchOrders(orderSearchQuery)" />
+    <div class="header-section d-flex align-items-center mb-4 row gap-3">
+      <div class="header-start col-lg">
+        <h2 class="fw-bold">Orders Management</h2>
       </div>
 
-      <div class="stats-mini d-flex justify-content-end">
-        <span class="text-muted">Total records:</span> 
-        <span class="fw-bold color1 ms-1">{{ statStore.orders.length }}</span>
+      <div class="header-main col-lg">
+        <input type="text" placeholder="Search order id" class="custom-input mb-3" v-model="orderSearchQuery" @keyup="statStore.searchOrders(orderSearchQuery)" />
+      </div>
+
+      <div class="header-end d-flex col-lg gap-3">
+        <div class="stats-mini d-flex">
+          <span class="text-muted">Total records:</span> 
+          <span class="fw-bold color1 ms-1">{{ statStore.orders.length }}</span>
+        </div>
       </div>
     </div>
 
@@ -106,11 +110,18 @@ export default {
 </template>
 
 <style scoped>
-h1, .stats-mini {
-  width: 400px;
+.header-section {
+  justify-content: space-between;
 }
-.search-container{
-  max-width: 400px;
+
+.header-end {
+  justify-content: end;
+  align-items: end;
+  flex-direction: column;
+}
+
+.custom-input {
+  width: 100%;
 }
 
 .panel {
@@ -198,5 +209,20 @@ h1, .stats-mini {
 }
 .status-select-custom.cancelled:hover, .status-select-custom.cancelled:focus {
   box-shadow: 0 0 0 2px #721C24;
+}
+@media(max-width: 991px){
+  .header-start, .header-main {
+    text-align: center;
+  }
+  .custom-input {
+    width: 50%;
+  }
+  .header-section {
+    justify-content: center;
+  }
+  .header-end {
+    align-items: center;
+    justify-content: center;
+  }
 }
 </style>
