@@ -1,17 +1,17 @@
 <script>
 import { useToast } from "vue-toastification"
 import NavBar from '../components/NavBar.vue'
-import { useStatStore } from '../stores/statStore'
+import { useOrdersStore } from '../stores/orderStore'
 
 export default {
   components: { NavBar },
   setup() {
-    const statStore = useStatStore()
+    const ordersStore = useOrdersStore()
     const toast = useToast()
 
-    statStore.fetchOrders()
+    ordersStore.fetchOrders()
 
-    return { statStore, toast }
+    return { ordersStore, toast }
   },
   data() {
     return {
@@ -22,11 +22,11 @@ export default {
   methods: {
     async handleStatusChange(orderId, newStatus) {
       try {
-        await this.statStore.updateOrderStatus(orderId, newStatus)
+        await this.ordersStore.updateOrderStatus(orderId, newStatus)
         this.toast.success(`Order updated to ${newStatus}`)
       } catch (error) {
         this.toast.error('Failed to update: ' + error.message)
-        this.statStore.fetchOrders()
+        this.ordersStore.fetchOrders()
       }
     }
   }
@@ -41,13 +41,13 @@ export default {
       </div>
 
       <div class="header-main col-lg">
-        <input type="text" placeholder="Search order id" class="custom-input mb-3" v-model="orderSearchQuery" @keyup="statStore.searchOrders(orderSearchQuery)" />
+        <input type="text" placeholder="Search..." class="custom-input mb-3" v-model="orderSearchQuery" @keyup="ordersStore.searchOrders(orderSearchQuery)" />
       </div>
 
       <div class="header-end d-flex col-lg gap-3">
         <div class="stats-mini d-flex">
           <span class="text-muted">Total records:</span> 
-          <span class="fw-bold color1 ms-1">{{ statStore.orders.length }}</span>
+          <span class="fw-bold color1 ms-1">{{ ordersStore.orders.length }}</span>
         </div>
       </div>
     </div>
@@ -67,7 +67,11 @@ export default {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="order in statStore.orders" :key="order.id" class="table-row">
+            <tr 
+            v-for="order in ordersStore.orders" :key="order.id" 
+            class="table-row"
+            style="cursor: pointer"
+            @click="$router.push({ name: 'OrderInfo', params: { id: order.id } })">
               <td class="px-4 py-3 fw-bold">#{{ order.id.slice(0, 8) }}</td>
               <td class="px-4 py-3">
                 <div class="d-flex flex-column">
@@ -79,25 +83,25 @@ export default {
                 ${{ order.total_price }}
               </td>
               <td class="px-3 py-2 text-center">
-                <div class="status-select-container">
+                <div>
                   <select 
                     :value="order.status" 
                     @change="handleStatusChange(order.id, $event.target.value)"
+                    @click.stop
                     :class="['status-select-custom', order.status.toLowerCase()]"
-                    class="text-center"
-                  >
+                    class="text-center">
                     <option class="text-center" value="pending">Pending</option>
                     <option class="text-center" value="delivered">Delivered</option>
                     <option class="text-center" value="cancelled">Cancelled</option>
-                  </select>
-                  <i class="bi bi-chevron-down select-icon"></i>
+                    </select>
+                    <i class="bi bi-chevron-down select-icon"></i>
                 </div>
               </td>
               <td class="px-4 py-3 text-end text-muted small">
                 {{ order.created_at ? new Date(order.created_at).toLocaleDateString() : '—' }}
               </td>
             </tr>
-            <tr v-if="statStore.orders.length === 0">
+            <tr v-if="ordersStore.orders.length === 0">
               <td colspan="5" class="text-center py-5 text-muted">
                 No orders found.
               </td>
@@ -159,24 +163,6 @@ export default {
   border-bottom: none;
 }
 
-.status-select-container {
-  position: relative;
-  display: inline-block;
-  width: 130px;
-}
-
-.status-select-custom {
-  appearance: none;
-  width: 100%;
-  padding: 4px 25px 4px 12px;
-  font-weight: 700;
-  border-radius: 20px;
-  border: none;
-  cursor: pointer;
-  text-transform: capitalize;
-  transition: all 0.2s ease;
-}
-
 .select-icon {
   position: absolute;
   right: 10px;
@@ -187,29 +173,6 @@ export default {
   opacity: 0.6;
 }
 
-.status-select-custom.delivered {
-  background-color: #D4EDDA;
-  color: #155724;
-}
-
-.status-select-custom.pending {
-  background-color: #FFF3CD;
-  color: #856404;
-}
-
-.status-select-custom.cancelled {
-  background-color: #F8D7DA;
-  color: #721C24;
-}
-.status-select-custom.delivered:hover, .status-select-custom.delivered:focus {
-  box-shadow: 0 0 0 2px var(--color1);
-}
-.status-select-custom.pending:hover, .status-select-custom.pending:focus {
-  box-shadow: 0 0 0 2px var(--color2);
-}
-.status-select-custom.cancelled:hover, .status-select-custom.cancelled:focus {
-  box-shadow: 0 0 0 2px #721C24;
-}
 @media(max-width: 991px){
   .header-start, .header-main {
     text-align: center;

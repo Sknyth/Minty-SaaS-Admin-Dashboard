@@ -1,16 +1,16 @@
 <script>
-import { computed } from 'vue'
-import { useStatStore } from '../stores/statStore'
 import {
-  Chart as ChartJS,
-  Tooltip,
-  LineElement,
   CategoryScale,
+  Chart as ChartJS,
+  Filler,
   LinearScale,
+  LineElement,
   PointElement,
-  Filler
+  Tooltip
 } from 'chart.js'
+import { computed } from 'vue'
 import { Line } from 'vue-chartjs'
+import { useStatStore } from '../stores/statStore'
 
 ChartJS.register(
   Tooltip,

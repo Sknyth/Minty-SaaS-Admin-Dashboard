@@ -7,7 +7,8 @@ export const useStatStore = defineStore('stats', {
     totalOrders: 0,
     chartLabels: [],
     chartData: [],
-    orders: [],
+    address: null,
+    payment: null,
     loading: false,
   }),
   actions: {
@@ -47,7 +48,7 @@ export const useStatStore = defineStore('stats', {
         .gte('created_at', firstDay)
         .order('created_at', { ascending: true })
 
-      if (error) return console.error(error)
+      if (error) throw error
 
       const stats = {}
       for (let d = 1; d <= now.getDate(); d++) {
@@ -64,47 +65,34 @@ export const useStatStore = defineStore('stats', {
       this.loading = false
     },
 
-    async fetchOrders() {
-      this.loading = true
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .order('created_at', { ascending: false })
-      if (error) throw error
-      this.orders = data
-      this.loading = false
-      return data
-    },
-
-    async searchOrders(query) {
+    async fetchAddress(addressID) {
       this.loading = true
 
-      if (!query) {
-        return await this.fetchOrders()
-      }
       const { data, error } = await supabase
-        .from('orders')
+        .from('addresses')
         .select('*')
-        .textSearch('id_text_search', query, {
-          config: 'simple',
-          type: 'phrase'
-        })
-      if (error) throw error
-      this.orders = data
+        .eq('id', addressID)
+
+      if(error) throw error
+
+      this.address = data[0]
+      
       this.loading = false
     },
 
-    async updateOrderStatus(orderId, newStatus) {
-      const { error } = await supabase
-        .from('orders')
-        .update({ status: newStatus })
-        .eq('id', orderId)
+    async fetchPayment(paymentID) {
+      this.loading = true
 
-      if (error) throw error
+      const { data, error } = await supabase
+        .from('payment_methods')
+        .select('*')
+        .eq('id', paymentID)
 
-      const order = this.orders.find(o => o.id === orderId)
-      if (order) order.status = newStatus
+      if(error) throw error
 
-    },
+      this.payment = data[0]
+      
+      this.loading = false
+    }
   }
 })

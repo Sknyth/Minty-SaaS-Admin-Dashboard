@@ -65,5 +65,36 @@ a {
 
 .button-color3:hover {
 	opacity: 0.9;
+}
 
+.status-select-custom {
+  appearance: none !important;
+  padding: 8px 8px;
+  font-weight: 700;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: all 0.2s ease;
+}
+.status-select-custom.delivered {
+  background-color: #D4EDDA;
+  color: #155724;
+}
+.status-select-custom.pending {
+  background-color: #FFF3CD;
+  color: #856404;
+}
+.status-select-custom.cancelled {
+  background-color: #F8D7DA;
+  color: #721C24;
+}
+.status-select-custom.delivered:hover, .status-select-custom.delivered:focus {
+  box-shadow: 0 0 0 2px var(--color1);
+}
+.status-select-custom.pending:hover, .status-select-custom.pending:focus {
+  box-shadow: 0 0 0 2px var(--color2);
+}
+.status-select-custom.cancelled:hover, .status-select-custom.cancelled:focus {
+  box-shadow: 0 0 0 2px #721C24;
 }

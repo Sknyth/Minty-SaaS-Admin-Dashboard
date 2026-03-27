@@ -7,6 +7,7 @@ import Login from '../views/Login.vue'
 import Users from '../views/Users.vue'
 import Products from '../views/Products.vue'
 import Orders from '../views/Orders.vue'
+import OrderInfo from '../views/OrderInfo.vue'
 
 const routes = [
   { path: '/', component: Dashboard, name: 'Dashboard' },
@@ -14,6 +15,7 @@ const routes = [
   { path: '/users', component: Users, name: 'Users' },
   { path: '/products', component: Products, name: 'Products' },
   { path: '/orders', component: Orders, name: 'Orders' },
+  { path: '/orderInformation:id', component: OrderInfo, name: 'OrderInfo' },
 ]
 
 const router = createRouter({

@@ -97,7 +97,7 @@ export default {
 .main-wrapper {
   margin-left: 300px;
   background-color: #f8f9fa;
-  height: 100vh;
+  min-height: 100vh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
