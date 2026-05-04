@@ -25,7 +25,7 @@ export default {
           this.toast.error('Error: ' + 'Email or password is incorrect')
           return
         }
-        if((e as Error).message === 'missing email or phone'){
+        if((e as Error).message === 'Missing email or phone'){
           this.toast.error('Error: ' + 'All fields are required')
           return
         }
