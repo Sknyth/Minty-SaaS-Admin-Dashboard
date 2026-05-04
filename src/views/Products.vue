@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { useToast } from "vue-toastification"
 import ModalAddProduct from '../components/ModalAddProduct.vue'
 import ModalEditProduct from '../components/ModalEditProduct.vue'
@@ -21,12 +21,12 @@ export default {
     }
   },
   methods: {
-    async handleDeleteProduct(productId) {
+    async handleDeleteProduct(productId: string) {
       try {
         await this.productsStore.deleteProduct(productId)
         this.toast.success('Product deleted successfully')
       } catch (error) {
-        this.toast.error('Error: ' + error.message)
+        this.toast.error('Error: ' + (error as Error).message)
       }
     }
   }
@@ -76,7 +76,7 @@ export default {
           <tbody>
             <tr v-for="product in productsStore.products" :key="product.id" class="table-row">
               <td class="px-4 py-3">
-                <img :src="product.image_url" alt="Product Image" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
+                <img :src="product.image_url ?? undefined" alt="Product Image" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;">
               </td>
 							<td class="px-4 py-3 fw-bold">
                 #{{ product.id.slice(0, 8) }}

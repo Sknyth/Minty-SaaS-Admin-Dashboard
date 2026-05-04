@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia'
 import supabase from '../supabase'
+import type { Product } from '../types'
 
 export const useProductsStore = defineStore('products', {
 	state: () => ({
-		products: [],
+		products: [] as Product[],
 		loading: false,
-
 	}),
 	actions: {
 		async fetchProducts() {
@@ -18,7 +18,7 @@ export const useProductsStore = defineStore('products', {
 			this.products = data
 			this.loading = false
 		},
-		async searchProducts(query) {
+		async searchProducts(query: string) {
 			this.loading = true
 			if (!query) return await this.fetchProducts()
 
@@ -33,7 +33,7 @@ export const useProductsStore = defineStore('products', {
 			this.products = data
 			this.loading = false
 		},
-		async deleteProduct(productId) {
+		async deleteProduct(productId: string) {
 			this.loading = true
 			const { error } = await supabase
 				.from('products')
@@ -43,7 +43,7 @@ export const useProductsStore = defineStore('products', {
 			this.products = this.products.filter(p => p.id !== productId)
 			this.loading = false
 		},
-		async updateProduct(productId, updatedData, file) {
+		async updateProduct(productId: string, updatedData: Product, file: File | null) {
 			this.loading = true
 
 			let finalImageUrl = updatedData.image_url
@@ -78,7 +78,7 @@ export const useProductsStore = defineStore('products', {
 			}
 			this.loading = false
 		},
-		async addProduct(newProduct, file) {
+		async addProduct(newProduct: Omit<Product, 'id'>, file: File | null) {
 			this.loading = true
 			let finalImageUrl = newProduct.image_url
 

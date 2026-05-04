@@ -1,14 +1,15 @@
 import supabase from '../supabase'
 import { defineStore } from 'pinia'
+import type { PaymentMethod, Address } from '../types'
 
 export const useStatStore = defineStore('stats', {
   state: () => ({
     totalEarnings: 0,
     totalOrders: 0,
-    chartLabels: [],
-    chartData: [],
-    address: null,
-    payment: null,
+    chartLabels: [] as string[],
+    chartData: [] as number[],
+    address: null as Address | null,
+    payment: null as PaymentMethod | null,
     loading: false,
   }),
   actions: {
@@ -50,7 +51,7 @@ export const useStatStore = defineStore('stats', {
 
       if (error) throw error
 
-      const stats = {}
+      const stats: { [key: number]: number } = {}
       for (let d = 1; d <= now.getDate(); d++) {
         stats[d] = 0
       }
@@ -65,7 +66,7 @@ export const useStatStore = defineStore('stats', {
       this.loading = false
     },
 
-    async fetchAddress(addressID) {
+    async fetchAddress(addressID: string) {
       this.loading = true
 
       const { data, error } = await supabase
@@ -80,7 +81,7 @@ export const useStatStore = defineStore('stats', {
       this.loading = false
     },
 
-    async fetchPayment(paymentID) {
+    async fetchPayment(paymentID: string) {
       this.loading = true
 
       const { data, error } = await supabase

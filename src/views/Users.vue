@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
 import { useToast } from "vue-toastification"
 import NavBar from '../components/NavBar.vue'
 import { useProfileStore } from '../stores/profileStore'
+import type { Profile } from '../types/profile'
 
 export default {
   components: { NavBar },
@@ -20,21 +21,28 @@ export default {
   },
 
   methods: {
-    async handleRoleChange(profileId, newRole) {
+    async onRoleChange(profileId: string, event: Event) {
+      const target = event.target as HTMLSelectElement;
+      
+      const newRole = target.value as Profile['role'];
+      
+      await this.handleRoleChange(profileId, newRole);
+    },
+    async handleRoleChange(profileId: string, newRole: Profile['role']) {
       try {
         await this.profileStore.updateUserRole(profileId, newRole)
         this.toast.success(`User role updated to ${newRole}`)
       } catch (error) {
-        this.toast.error('Failed to update: ' + error.message)
+        this.toast.error('Failed to update: ' + (error as Error).message)
         this.profileStore.fetchProfiles()
       }
     },
-    async handleDeleteUser(profileId) {
+    async handleDeleteUser(profileId: string) {
       try {
         await this.profileStore.deleteUser(profileId)
         this.toast.success('User deleted successfully')
       } catch (error) {
-        this.toast.error('Error: ' + error.message)
+        this.toast.error('Error: ' + (error as Error).message)
       }
     }
   }
@@ -93,7 +101,7 @@ export default {
                 <div class="role-select-container">
                   <select 
                     :value="profile.role" 
-                    @change="handleRoleChange(profile.id, $event.target.value)"
+                    @change="onRoleChange(profile.id, $event)"
                     :class="['role-select-custom', profile.role.toLowerCase()]"
                     class="text-center"
                   >

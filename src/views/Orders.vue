@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
 import { useToast } from "vue-toastification"
 import NavBar from '../components/NavBar.vue'
 import { useOrdersStore } from '../stores/orderStore'
+import type { Order } from '../types'
 
 export default {
   components: { NavBar },
@@ -20,12 +21,19 @@ export default {
   },
 
   methods: {
-    async handleStatusChange(orderId, newStatus) {
+    onStatusChange(orderId: string, event: Event) {
+      const target = event.target as HTMLSelectElement;
+      
+      const newStatus = target.value as Order['status'];
+      
+      this.handleStatusChange(orderId, newStatus);
+    },
+    async handleStatusChange(orderId: string, newStatus: Order['status']) {
       try {
         await this.ordersStore.updateOrderStatus(orderId, newStatus)
         this.toast.success(`Order updated to ${newStatus}`)
       } catch (error) {
-        this.toast.error('Failed to update: ' + error.message)
+        this.toast.error('Failed to update: ' + (error as Error).message)
         this.ordersStore.fetchOrders()
       }
     }
@@ -86,7 +94,7 @@ export default {
                 <div>
                   <select 
                     :value="order.status" 
-                    @change="handleStatusChange(order.id, $event.target.value)"
+                    @change="onStatusChange(order.id, $event)"
                     @click.stop
                     :class="['status-select-custom', order.status.toLowerCase()]"
                     class="text-center">

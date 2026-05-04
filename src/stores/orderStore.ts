@@ -1,9 +1,10 @@
 import supabase from '../supabase'
 import { defineStore } from 'pinia'
+import type { Order } from '../types'
 
 export const useOrdersStore = defineStore('Orders', {
   state: () => ({
-    orders: [],
+    orders: [] as Order[],
     loading: false,
   }),
 	actions: {
@@ -19,7 +20,7 @@ export const useOrdersStore = defineStore('Orders', {
       return data
     },
 
-    async searchOrders(query) {
+    async searchOrders(query: string) {
       this.loading = true
 
       if (!query) {
@@ -37,7 +38,7 @@ export const useOrdersStore = defineStore('Orders', {
       this.loading = false
     },
 
-    async updateOrderStatus(orderId, newStatus) {
+    async updateOrderStatus(orderId: string, newStatus: Order['status']) {
       const { error } = await supabase
         .from('orders')
         .update({ status: newStatus })

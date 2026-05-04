@@ -1,16 +1,19 @@
 import supabase from '../supabase'
 import { defineStore } from 'pinia'
 import router from '../router'
+import type { User } from '@supabase/supabase-js'
+import type { Profile } from '../types'
 
 export const useAuthStore = defineStore('auth', {
 	state: () => ({
-		user: null,
-		users: [],
-		profile: null,
+		user: null as User | null,
+		users: [] as User[],
+		profile: null as Profile | null,
 		isAuth: false,
+		loading: false,
 	}),
 	actions: {
-		async signIn({ email, password }) {
+		async signIn({ email, password }: { email: string; password: string }) {
 			const { data, error } = await supabase.auth.signInWithPassword({
 				email,
 				password,
@@ -42,22 +45,22 @@ export const useAuthStore = defineStore('auth', {
 			const user = session.user
 			this.user = user
 
-			const { data: profile } = await supabase
+			const { data }: { data: Profile | null } = await supabase
 				.from('profiles')
 				.select('role')
 				.eq('id', this.user.id)
 				.single()
 
-			if (profile?.role === 'admin') {
-				this.profile = profile
+			if (data?.role === 'admin') {
+				this.profile = data
 				router.push('/')
 			} else {
 				await this.signOut()
 				throw new Error('You are not an administrator')
 			}
 
-			if (profile) {
-				this.profile = profile
+			if (data) {
+				this.profile = data
 			}
 		},
 

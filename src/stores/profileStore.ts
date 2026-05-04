@@ -1,10 +1,11 @@
 import { defineStore } from 'pinia'
 import supabase from '../supabase'
 import { useAuthStore } from './authStore'
+import type { Profile } from '../types'
 
 export const useProfileStore = defineStore('profile', {
 	state: () => ({
-		profiles: [],
+		profiles: [] as Profile[],
 		loading: false,
 		authStore: useAuthStore(),
 	}),
@@ -21,7 +22,7 @@ export const useProfileStore = defineStore('profile', {
       this.profiles = data
       this.loading = false
     },
-    async updateUserRole(profileId, newRole) {
+    async updateUserRole(profileId: string, newRole: string) {
       this.loading = true
       const { error } = await supabase
         .from('profiles')
@@ -34,7 +35,7 @@ export const useProfileStore = defineStore('profile', {
       if (profile) profile.role = newRole
       this.loading = false
     },
-    async deleteUser(profileId) {
+    async deleteUser(profileId: string) {
       this.loading = true
       const { error } = await supabase.rpc('delete_user_by_admin', {
         target_user_id: profileId
@@ -45,7 +46,7 @@ export const useProfileStore = defineStore('profile', {
       this.profiles = this.profiles.filter(p => p.id !== profileId)
       this.loading = false
     },
-    async searchProfiles(query) {
+    async searchProfiles(query: string) {
       this.loading = true
       if (!query) return await this.fetchProfiles()
   

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import { useToast } from "vue-toastification"
 import { useAuthStore } from '../stores/authStore'
 export default {
@@ -21,15 +21,15 @@ export default {
         this.$router.push('/');
         this.toast.success("Sign in successful!")
       } catch (e) {
-        if(e.message === 'Invalid login credentials'){
+        if((e as Error).message === 'Invalid login credentials'){
           this.toast.error('Error: ' + 'Email or password is incorrect')
           return
         }
-        if(e.message === 'missing email or phone'){
+        if((e as Error).message === 'missing email or phone'){
           this.toast.error('Error: ' + 'All fields are required')
           return
         }
-        this.toast.error('Error: ' + e.message)
+        this.toast.error('Error: ' + (e as Error).message)
       }
     },
   },

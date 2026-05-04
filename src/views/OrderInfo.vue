@@ -1,9 +1,9 @@
-<script>
+<script lang="ts">
 import NavBar from '../components/NavBar.vue'
 import { useOrdersStore } from '../stores/orderStore'
 import { useStatStore } from '../stores/statStore'
 import { useToast } from "vue-toastification"
-
+import type { Order } from '../types'
 
 export default {
 	components: { NavBar },
@@ -27,12 +27,19 @@ export default {
 		}
 	},
 	methods: {
-		async handleStatusChange(orderId, newStatus) {
+		onStatusChange(orderId: string, event: Event) {
+			const target = event.target as HTMLSelectElement;
+			
+			const newStatus = target.value as Order['status'];
+			
+			this.handleStatusChange(orderId, newStatus);
+		},
+		async handleStatusChange(orderId: string, newStatus: Order['status']) {
       try {
         await this.ordersStore.updateOrderStatus(orderId, newStatus)
         this.toast.success(`Order updated to ${newStatus}`)
       } catch (error) {
-        this.toast.error('Failed to update: ' + error.message)
+        this.toast.error('Failed to update: ' + (error as Error).message)
         this.ordersStore.fetchOrders()
       }
     }
@@ -94,7 +101,7 @@ export default {
 						<span class="label fw-bold">Status:</span>
 						<select 
               :value="currentOrder.status" 
-              @change="handleStatusChange(currentOrder.id, $event.target.value)"
+              @change="onStatusChange(currentOrder.id, $event)"
               :class="['status-select-custom', currentOrder.status.toLowerCase()]"
               class="text-center"
             >
@@ -128,7 +135,7 @@ export default {
 						<tr v-for="item in currentOrder.items" :key="item.id">
 							<td>
 								<div class="product-item d-flex align-items-center gap-3">
-									<img :src="item.image_url" alt="Product" class="product-img">
+									<img :src="item.image_url ?? undefined" alt="Product" class="product-img">
 									<div>
 										<div class="fw-bold">{{ item.name }}</div>
 									</div>

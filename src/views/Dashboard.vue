@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import EarningChart from '../components/EarningsChart.vue'
 import OrdersChart from '../components/OrdersChart.vue'
 import NavBar from '../components/NavBar.vue'
